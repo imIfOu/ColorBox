@@ -1,20 +1,22 @@
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Class MouseMoveChecker.
  */
 public final class MouseMoveChecker {
-
-	/** The MouseMoveChecker singleton instance */
+	
+	/**  The MouseMoveChecker singleton instance. */
 	private static MouseMoveChecker CHECKER_INSTANCE = new MouseMoveChecker();
 
 	/** The list of listeners. */
 	private ArrayList<MouseMoveListener> list_listeners = new ArrayList<>();
 
 	/** The checker. */
-	private Checker checker;
+	private Checker checker = new Checker();
 
 	/**
 	 * Instantiates a new mouse move checker.
@@ -27,7 +29,7 @@ public final class MouseMoveChecker {
 	 *
 	 * @return single instance of MouseMoveChecker
 	 */
-	public MouseMoveChecker getInstance() {
+	public static MouseMoveChecker getInstance() {
 		return CHECKER_INSTANCE;
 	}
 
@@ -37,7 +39,7 @@ public final class MouseMoveChecker {
 	 * @param listener
 	 *            the MouseMoveListener
 	 */
-	public synchronized void addMouseMoveListener(MouseMoveListener listener) {
+	public void addMouseMoveListener(MouseMoveListener listener) {
 		this.list_listeners.add(listener);
 	}
 
@@ -47,10 +49,20 @@ public final class MouseMoveChecker {
 	 * @param listener
 	 *            the MouseMoveListener
 	 */
-	public synchronized void removeMouseMoveListener(MouseMoveListener listener) {
-		this.removeMouseMoveListener(listener);
+	public void removeMouseMoveListener(MouseMoveListener listener) {
+		this.list_listeners.remove(listener);
 	}
 
+	/**
+	 * Gets the listeners.
+	 *
+	 * @return the listeners
+	 */
+	public List<MouseMoveListener> getAllListener(){
+		return new ArrayList<MouseMoveListener>(list_listeners);
+	}
+	
+	
 	/**
 	 * Start checker.
 	 *
@@ -58,9 +70,10 @@ public final class MouseMoveChecker {
 	 *             the mouse move exception
 	 */
 	public void startChecker() throws MouseMoveException {
-		if (checker != null && checker.isAlive())
+		if (checker != null && isRunning())
 			throw new MouseMoveException("Mouse move checker is already running.");
 		checker = new Checker();
+		checker.setRunningValue(true);
 		checker.start();
 	}
 
@@ -69,17 +82,27 @@ public final class MouseMoveChecker {
 	 *
 	 */
 	public void stopChecker() {
-		if (checker != null && checker.isAlive())
+		if (checker != null && isRunning())
 			checker.stopRun();
 	}
 
+	
+	/**
+	 * Checks if is running.
+	 *
+	 * @return true, if is running
+	 */
+	public boolean isRunning(){
+		return checker.isAlive() && checker.getRunningValue();
+	}
+	
 	/**
 	 * Fire mouse moved.
 	 *
 	 * @param point
 	 *            the point of event
 	 */
-	public void fireMouseMoved(Point point) {
+	private void fireMouseMoved(Point point) {
 		ArrayList<MouseMoveListener> list = new ArrayList<>(list_listeners);
 		if (list.size() > 0) {
 			MouseMoveEvent event = new MouseMoveEvent(point);
@@ -97,10 +120,14 @@ public final class MouseMoveChecker {
 		private static final int TIMER = 400;
 
 		/** The running. */
-		private volatile boolean running = true;
+		private AtomicBoolean running = new AtomicBoolean(false);
 
+		/** The current point. */
 		private Point current_point;
 
+		/**
+		 * Instantiates a new checker.
+		 */
 		public Checker() {
 		}
 
@@ -108,7 +135,7 @@ public final class MouseMoveChecker {
 		 * Stop run.
 		 */
 		public void stopRun() {
-			running = false;
+			running.set(false);
 		}
 
 		/**
@@ -116,7 +143,7 @@ public final class MouseMoveChecker {
 		 */
 		@Override
 		public void run() {
-			while (running) {
+			while (running.get()) {
 				try {
 					Point point = MouseInfo.getPointerInfo().getLocation();
 					if (!point.equals(current_point)) {
@@ -128,6 +155,24 @@ public final class MouseMoveChecker {
 					e.printStackTrace();
 				}
 			}
+		}
+		
+		/**
+		 * Gets the running value.
+		 *
+		 * @return the running value
+		 */
+		public boolean getRunningValue(){
+			return running.get();
+		}
+		
+		/**
+		 * Sets the running value.
+		 *
+		 * @param v the new running value
+		 */
+		public void setRunningValue(boolean v){
+			running.set(v);
 		}
 	}
 }
