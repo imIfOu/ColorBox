@@ -1,3 +1,4 @@
+package org.ifou.colorbox.mousemove;
 import java.awt.Point;
 import java.util.EventObject;
 
