@@ -1,3 +1,4 @@
+package org.ifou.colorbox.mousemove;
 import java.util.EventListener;
 
 /**

@@ -1,3 +1,4 @@
+package org.ifou.colorbox.mousemove;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public final class MouseMoveChecker {
 	private final class Checker extends Thread {
 
 		/** The Constant TIMER. */
-		private static final int TIMER = 400;
+		private static final int TIMER = 80;
 
 		/** The running. */
 		private AtomicBoolean running = new AtomicBoolean(false);

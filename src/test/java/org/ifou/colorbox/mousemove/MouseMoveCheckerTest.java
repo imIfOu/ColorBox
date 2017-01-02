@@ -1,11 +1,21 @@
-import static org.junit.Assert.*;
+package org.ifou.colorbox.mousemove;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.awt.MouseInfo;
 import java.awt.Point;
-import java.util.List;
 
+import org.ifou.colorbox.mousemove.MouseMoveChecker;
+import org.ifou.colorbox.mousemove.MouseMoveEvent;
+import org.ifou.colorbox.mousemove.MouseMoveException;
+import org.ifou.colorbox.mousemove.MouseMoveListener;
 import org.junit.After;
 import org.junit.Test;
+
 
 public class MouseMoveCheckerTest {
 
@@ -65,9 +75,22 @@ public class MouseMoveCheckerTest {
 		assertEquals(0,checker.getAllListener().size());
 	}	
 	
+	
+	//No move mouse during this test
 	@Test
-	public void fireMouseMovedTest(){
-		
+	public void fireMouseMovedTest() throws MouseMoveException{
+		MockMouseMoveListener listener=new MockMouseMoveListener();
+		checker.addMouseMoveListener(listener);
+		assertNull(listener.getPoint());
+		checker.startChecker();
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		checker.stopChecker();
+		checker.removeMouseMoveListener(listener);
+		assertEquals(MouseInfo.getPointerInfo().getLocation(),listener.getPoint());
 	}
 	
 	

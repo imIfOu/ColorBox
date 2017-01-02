@@ -1,3 +1,4 @@
+package org.ifou.colorbox.mousemove;
 
 /**
  * The Class MouseMoveException.
