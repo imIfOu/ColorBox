@@ -64,7 +64,6 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
 
-
 public class ColorBox extends HBox {
 
 	private ColorRectPane colorRectPane;
@@ -691,7 +690,8 @@ public class ColorBox extends HBox {
 		@Override
 		public void mouseMoved(MouseMoveEvent event) {
 			final Point point = event.getPoint();
-			BufferedImage im = robot.createScreenCapture(new Rectangle((int) point.getX() - 4, (int) point.getY() - 4, 9, 9));
+			BufferedImage im = robot
+					.createScreenCapture(new Rectangle((int) point.getX() - 4, (int) point.getY() - 4, 9, 9));
 			view.setImage(SwingFXUtils.toFXImage(scale(im, 10), null));
 			Platform.runLater(new Runnable() {
 				@Override
