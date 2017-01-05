@@ -20,7 +20,7 @@ public class MainFrame extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 610, 230);
+		Scene scene = new Scene(root);
 		root.setCenter(new ColorBox(primaryStage));
 		try {
 			MouseMoveChecker.getInstance().startChecker();
